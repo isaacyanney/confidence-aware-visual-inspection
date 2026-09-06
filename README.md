@@ -2,7 +2,7 @@
 
 An independent portfolio project for classifying six steel-surface defect categories while making uncertainty visible at the API boundary.
 
-The repository focuses on the parts that matter in a review: a clear inference contract, confidence thresholds, request tracing, safe failure behaviour, container packaging and automated tests. The included model adapter is deterministic and synthetic so the repository can be tested without distributing a trained checkpoint.
+The repository focuses on the parts that matter in a review: a clear inference contract, confidence thresholds, request tracing, safe failure behaviour, container packaging and automated tests. A real PyTorch CNN is trained and evaluated in automation on procedurally generated textures. The API deliberately keeps a deterministic synthetic adapter as its default.
 
 ## Defect classes
 
@@ -19,13 +19,15 @@ The repository focuses on the parts that matter in a review: a clear inference c
 - confidence-aware outcomes: classified, review_required or rejected
 - request IDs and inference timing
 - image validation and bounded upload size
-- model-adapter separation for a future PyTorch checkpoint
+- reproducible PyTorch training on procedurally generated textures
+- held-out accuracy, per-class precision/recall, confusion matrix and calibration error
+- downloadable checkpoint and metrics from each successful training run
 - Docker packaging and GitHub Actions validation
 - tests covering healthy, uncertain and invalid requests
 
 ## Evidence boundary
 
-This is an independent learning and portfolio project. It does not claim factory deployment, live production use, business impact or ownership of an industrial inspection system. The default adapter produces deterministic synthetic scores; no trained weights or proprietary data are included.
+This is an independent learning and portfolio project. It does not claim factory deployment, live production use, business impact or ownership of an industrial inspection system. Training uses procedurally generated textures, not real industrial images. Workflow artifacts are experimental evidence only.
 
 ## Run locally
 
@@ -43,6 +45,17 @@ Open `http://127.0.0.1:8000/docs` for the API interface.
 ```bash
 pytest
 ```
+
+## Train and evaluate
+
+```bash
+pip install -e ".[ml]"
+python -m ml.train --epochs 5 --samples-per-class 64
+```
+
+The command writes `metrics.json` and a PyTorch checkpoint under `artifacts/`.
+The report identifies the dataset as synthetic and sets
+`production_evidence` to `false`.
 
 ## API contract
 
@@ -70,7 +83,7 @@ docs/                architecture and model-card notes
 
 ## Next technical improvements
 
-1. Train and evaluate a real PyTorch model on a properly licensed dataset.
-2. Record class-level precision, recall and calibration metrics.
+1. Replace procedural textures with a properly licensed real-image dataset.
+2. Compare the small CNN with a transfer-learning baseline.
 3. Version the checkpoint and preprocessing contract together.
 4. Add drift monitoring before considering any operational use.
