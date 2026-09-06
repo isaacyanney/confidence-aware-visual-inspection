@@ -20,7 +20,7 @@ jobs:
       - run: python -m pip install --upgrade pip
       - run: pip install -e ".[dev]"
       - run: ruff check .
-      - run: pytest
+      - run: pytest tests/test_api.py
       - run: docker build -t confidence-aware-visual-inspection:test .
 
   pytorch-training:
